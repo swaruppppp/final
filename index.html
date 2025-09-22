@@ -168,7 +168,6 @@
       <button onclick="showActivity('diary')" class="w-full bg-pink-400 hover:bg-pink-500 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-transform transform hover:scale-105">
         Our Diary 📝
       </button>
-      <!-- === CHANGE 1: "Our Memories" is now a direct link to the new page === -->
       <a href="memories.html" class="block w-full text-center bg-pink-400 hover:bg-pink-500 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-transform transform hover:scale-105">
         Our Memories 📸
       </a>
@@ -193,8 +192,6 @@
         Reveal
       </button>
     </div>
-
-    <!-- === CHANGE 2: The entire Photo Gallery section with the upload inputs has been removed === -->
 
     <!-- Diary Section -->
     <div id="diary-activity" class="activity-section hidden">
@@ -227,12 +224,22 @@
     <div id="wishes-activity" class="activity-section hidden text-center">
       <h2 class="text-2xl font-bold text-pink-500 mb-4">Birthday Wishes</h2>
       <p class="text-gray-700 mb-6">A very special message from all of us who love you! ❤️</p>
-      <div id="wishes-player-container" class="w-full max-w-xl mx-auto bg-pink-100 p-2 rounded-xl shadow-lg border border-pink-200 text-center">
-        <!-- Placeholder for a video -->
-        <video class="w-full rounded-lg" controls>
-          <source src="https://assets.mixkit.co/videos/preview/mixkit-little-girl-hugging-a-teddy-bear-4629-large.mp4" type="video/mp4">
-          Your browser does not support the video tag.
-        </video>
+      <div id="wishes-player-container" class="w-full max-w-xl mx-auto bg-pink-100 p-2 rounded-xl shadow-lg border border-pink-200 text-center space-y-4">
+        <!-- === VIDEO FIX: Replaced placeholder with your actual videos === -->
+        <div>
+          <h3 class="text-lg font-semibold text-pink-600">Misti's Wish</h3>
+          <video class="w-full rounded-lg" controls>
+            <source src="videos/misti.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold text-pink-600">Tanisha's Wish</h3>
+          <video class="w-full rounded-lg" controls>
+            <source src="videos/tanisha.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+        </div>
       </div>
     </div>
     
@@ -240,9 +247,7 @@
     <div id="timeline-activity" class="activity-section hidden">
         <h2 class="text-2xl font-bold text-pink-500 mb-4 text-center">Our Beautiful Story</h2>
         <div id="timeline-container" class="relative max-w-2xl mx-auto p-4 bg-pink-50 rounded-xl border border-pink-200">
-            <!-- Timeline content will be generated here -->
             <div id="timeline-content" class="space-y-8">
-                <!-- Example Timeline Event -->
                 <div class="timeline-event">
                     <p class="text-sm text-gray-500">October 18, 2024</p>
                     <p class="text-gray-700 font-semibold">The day you were born and came into my life!</p>
@@ -253,14 +258,14 @@
 
     <!-- Go Back Button -->
     <div class="mt-8 flex justify-center">
-      <button onclick="goBack()" class="bg-pink-400 hover:bg-pink-500 text-white font-bold py-2 px-4 rounded-full shadow transition-transform transform hover:scale-105">
+      <button onclick="goBack()" class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-full shadow transition-transform transform hover:scale-105">
         Go Back
       </button>
     </div>
 
   </div>
 
-  <!-- Floating hearts -->
+  <!-- Floating hearts and general non-module script -->
   <script>
     /*
       ============================
@@ -293,11 +298,9 @@
     }
 
     function goBack() {
-      // This function will now be used to go from an activity back to the main world view
       document.querySelectorAll('.activity-section').forEach(section => {
         section.classList.add('hidden');
       });
-      // Assuming you want a back button within the activities to show the main buttons again
       document.getElementById('activity-buttons-container').classList.remove('hidden');
     }
     
@@ -338,29 +341,6 @@
         const nextReason = reasonQueue.pop();
         display.textContent = nextReason;
         playChimeSound();
-    }
-
-    /* === CHANGE 3: Removed Photo Gallery JavaScript (openModal, closeModal, addPhoto) === */
-    
-    /*
-      ============================
-      VIRTUAL DIARY
-      ============================
-    */
-    const diaryInput = document.getElementById('diary-input');
-    async function saveDiaryEntry() {
-      const newEntry = diaryInput.value.trim();
-      if (newEntry && diaryCollectionRef) {
-        try {
-            await addDoc(diaryCollectionRef, { 
-                entry: newEntry,
-                timestamp: new Date()
-            });
-            diaryInput.value = '';
-        } catch (e) {
-            console.error("Error saving diary entry: ", e);
-        }
-      }
     }
     
     /*
@@ -442,16 +422,15 @@
     function playChimeSound() { initAudio(); chimeSynth.triggerAttackRelease("C5", "8n"); }
   </script>
 
-  <!-- Firebase setup -->
+  <!-- Firebase setup and module script -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-    // === CHANGE 4: Removed Firebase Storage imports as they are no longer needed ===
+    import { getFirestore, collection, addDoc, onSnapshot, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
     
     setLogLevel('debug');
     
-    // Firebase global variables (provided by the environment)
+    // Firebase global variables
     const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
     const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
     const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
@@ -459,7 +438,7 @@
     let db;
     let auth;
     let userId;
-    let diaryCollectionRef; // Removed photoCollectionRef
+    let diaryCollectionRef;
 
     try {
       const app = initializeApp(firebaseConfig);
@@ -476,8 +455,6 @@
         
         const basePublicPath = `/artifacts/${appId}/public/data`;
         diaryCollectionRef = collection(db, `${basePublicPath}/bansi_diary`);
-
-        // === CHANGE 5: Removed the onSnapshot listener for the photo gallery ===
 
         // Listen for real-time updates to the diary
         onSnapshot(diaryCollectionRef, (snapshot) => {
@@ -499,7 +476,32 @@
       console.error("Firebase initialization failed:", e);
     }
     
-    // === CHANGE 6: Removed the global window.addPhoto function ===
+    /*
+      ============================
+      VIRTUAL DIARY (FIXED)
+      ============================
+    */
+    // This function is now inside the module, so it can access 'diaryCollectionRef'
+    async function saveDiaryEntry() {
+      const diaryInput = document.getElementById('diary-input');
+      const newEntry = diaryInput.value.trim();
+      if (newEntry && diaryCollectionRef) { // Now it knows what diaryCollectionRef is
+        try {
+            await addDoc(diaryCollectionRef, { 
+                entry: newEntry,
+                timestamp: new Date()
+            });
+            diaryInput.value = ''; // Clear the input after saving
+        } catch (e) {
+            console.error("Error saving diary entry: ", e);
+        }
+      } else {
+          console.error("Diary entry is empty or database is not ready.");
+      }
+    }
+    
+    // We attach it to the global 'window' object so the HTML onclick="saveDiaryEntry()" can find it.
+    window.saveDiaryEntry = saveDiaryEntry;
   </script>
 
 </body>
